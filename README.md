@@ -1,218 +1,339 @@
+# 🐳 INCEPTION - Docker Infrastructure Project
+
+<div align="center">
+
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/Docker%20Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
+![WordPress](https://img.shields.io/badge/WordPress-21759B?style=for-the-badge&logo=wordpress&logoColor=white)
+![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+
+**A comprehensive containerized web infrastructure built for 42 School (1337 Morocco)**
 
 ---
 
-# 🐳 INCEPTION - A Docker-based Web Infrastructure
+*"System administration related exercise - Virtualizing several Docker images, creating them in your new personal virtual machine."*
 
-Welcome to **INCEPTION** – a 42 School project that introduces you to the world of containerized services using **Docker** and **Docker Compose**. The goal of this project is to set up a secure, scalable, and modular web infrastructure from scratch using multiple Docker containers.
+</div>
 
----
+## 📋 Table of Contents
 
-## 📦 Overview
+- [🌟 Overview](#-overview)
+- [🏗️ Architecture](#️-architecture)
+- [🔧 Services](#-services)
+- [🎁 Bonus Services](#-bonus-services)
+- [🚀 Quick Start](#-quick-start)
+- [📁 Project Structure](#-project-structure)
+- [🔐 Security Features](#-security-features)
+- [⚙️ Configuration](#️-configuration)
+- [📊 Monitoring](#-monitoring)
+- [🛠️ Development](#️-development)
+- [📝 42 School Requirements](#-42-school-requirements)
 
-This project sets up a WordPress-based web service running on an Nginx server with a MariaDB database in a secure, containerized environment. You will also configure domain names, SSL encryption, and a persistent volume system – all orchestrated through Docker Compose.
+## 🌟 Overview
 
----
-Got it! I see what you mean—it's better to present the project structure in a more readable way that doesn't overwhelm the user with too much information all at once. Here’s a cleaner breakdown of the **project structure** in the `README.md` that’s easier to follow.
+INCEPTION is a Docker-based infrastructure project that demonstrates advanced containerization concepts and microservices architecture. This project creates a complete web hosting environment using Docker containers with custom-built images from Debian 12.
 
----
+### Key Features
 
-## 📂 Project Structure
+- 🔒 **HTTPS/TLS 1.3 Only** - Secure communication
+- 🐘 **Custom Docker Images** - Built from scratch using Debian 12
+- 🔄 **Container Orchestration** - Using Docker Compose
+- 📊 **Monitoring & Analytics** - Integrated monitoring solutions
+- 🗃️ **Persistent Storage** - Volume management for data persistence
+- 🌐 **Multi-service Architecture** - Microservices design pattern
 
-The **INCEPTION** project is organized as follows:
+## 🏗️ Architecture
 
+```mermaid
+graph TB
+    A[Client Browser] -->|HTTPS:443| B[NGINX Reverse Proxy]
+    B --> C[WordPress:9000]
+    C --> D[MariaDB:3306]
+    C --> E[Redis:6379]
+    B --> F[Static Website:4000]
+    G[Adminer:3000] --> D
+    H[FTP Server:21] --> I[WordPress Files]
+    J[cAdvisor:8080] --> K[Docker Stats]
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e8
+    style D fill:#fff3e0
+    style E fill:#fce4ec
 ```
-inception/
-├── srcs/                    # Main source directory containing configuration files
-│   ├── docker-compose.yml    # 📦 Main Docker Compose configuration file to orchestrate services
-│   ├── .env                 # 🔐 Environment variables for database credentials, domain, etc.
-│   ├── requirements/         # 📁 Directory containing individual service setups
-│   │   ├── mariadb/          # 🛢️ MariaDB setup and configuration
-│   │   │   ├── Dockerfile    # Dockerfile to build the MariaDB container
-│   │   │   └── conf.sql      # SQL script to initialize the MariaDB database
-│   │   ├── nginx/            # 🌐 Nginx setup and configuration
-│   │   │   ├── Dockerfile    # Dockerfile to build the Nginx container
-│   │   │   └── default.conf  # Nginx default server configuration (including SSL)
-│   │   └── wordpress/        # 📝 WordPress setup and configuration
-│   │       ├── Dockerfile    # Dockerfile to build the WordPress container
-│   │       └── setup.sh      # Shell script for setting up WordPress (e.g., database connection)
-│   └── tools/                # 🛠️ Additional tools, like SSL certificates or helper scripts
-│       └── mkcert.sh         # Script to generate SSL certificates (optional)
-└── README.md                 # 📘 This file (project documentation)
-```
 
----
+## 🔧 Services
 
-### 🔍 Breakdown of Key Files and Folders
+### Core Services (Mandatory)
 
-- **`docker-compose.yml`**  
-  The main orchestration file that ties together the services (MariaDB, WordPress, Nginx) and manages container networking and persistence.
+#### 🌐 NGINX (Port 443)
+- **SSL/TLS Configuration**: Only TLSv1.3 protocol
+- **Custom SSL Certificates**: Self-signed certificates
+- **Reverse Proxy**: Routes requests to appropriate services
+- **Static Content**: Serves WordPress files
 
-- **`.env`**  
-  Contains sensitive data like database credentials, and environment variables such as domain names or paths that are used across services.
+#### 📝 WordPress (Port 9000)
+- **PHP-FPM**: FastCGI Process Manager
+- **Redis Integration**: Object caching support
+- **Multi-user Setup**: Admin and regular user accounts
+- **Volume Mounting**: Persistent file storage
 
-- **`requirements/`**  
-  Contains the individual Dockerfiles and configuration files for each service:
-  - **`mariadb/`** – Configures and sets up the MariaDB database.
-  - **`nginx/`** – Configures Nginx as a reverse proxy and web server.
-  - **`wordpress/`** – Configures the WordPress service to connect with MariaDB and serve the content.
+#### 🗄️ MariaDB (Port 3306)
+- **Database Engine**: MySQL-compatible database
+- **Environment Variables**: Configurable credentials
+- **Persistent Storage**: Data volume mounting
+- **Network Isolation**: Internal network communication
 
-- **`tools/`**  
-  Optional helper scripts for tasks like generating SSL certificates with `mkcert.sh`.
+## 🎁 Bonus Services
 
----
----
+#### 🛡️ Adminer (Port 3000)
+Database administration interface for easy database management.
 
-## 🚀 Services Explained
+#### ⚡ Redis (Port 6379)
+In-memory caching solution for WordPress performance optimization.
 
-### 🗃️ 1. MariaDB (Database)
-- Acts as the **backend database** for WordPress.
-- Initializes with custom credentials (defined in `.env`).
-- Persists data using **named Docker volumes** to prevent data loss on container restart.
+#### 📁 FTP Server (Port 21)
+File transfer protocol server for WordPress file management.
+- **Passive Mode Ports**: 21100-21110
+- **WordPress Integration**: Direct access to WordPress files
 
-📁 Folder: `requirements/mariadb`
+#### 🌍 Static Website (Port 4000)
+Custom profile website showcasing frontend development skills.
 
-🔧 Includes:
-- Initialization script to create a DB and user.
-- Secure configuration options.
+#### 📊 cAdvisor (Port 8080)
+Container monitoring and performance analytics dashboard.
 
----
+## 🚀 Quick Start
 
-### 📝 2. WordPress (CMS)
-- A dynamic content management system served via PHP.
-- Communicates with the MariaDB database to store/retrieve content.
-- Configured via CLI on first boot using a custom script.
+### Prerequisites
 
-📁 Folder: `requirements/wordpress`
+- Docker Engine 20.10+
+- Docker Compose V2
+- Linux environment (tested on Debian/Ubuntu)
 
-⚙️ Includes:
-- Automatic installation of WordPress using `wp-cli`.
-- Connection to the database using environment variables.
+### Installation
 
----
-
-### 🌐 3. Nginx (Web Server)
-- Acts as a **reverse proxy** to serve WordPress over HTTPS.
-- Configured to handle SSL (with self-signed certificates).
-- Listens on port 443 for secure connections.
-
-📁 Folder: `requirements/nginx`
-
-🔒 Features:
-- SSL certificate generation with OpenSSL.
-- Secure redirection and static file delivery.
-
----
-
-## 📁 Volumes & Persistence
-
-All data is stored in Docker **volumes**, ensuring persistence across container restarts. For example:
-- WordPress uploads
-- MariaDB data
-
-These volumes are defined in `docker-compose.yml`.
-
----
-
-## 🛠️ Makefile Commands
-
-This repo comes with a `Makefile` to simplify managing your containers.
-
-| Command           | Description                       |
-|------------------|-----------------------------------|
-| `make`           | Build and start all containers    |
-| `make down`      | Stop and remove containers        |
-| `make fclean`    | Full cleanup (containers, volumes)|
-| `make rebuild`   | Rebuild all containers from scratch|
-
----
-
-## 🔐 Security
-
-- All services run with **non-root** users.
-- Passwords and secrets managed via `.env` file.
-- SSL encryption enabled via self-signed certs.
-- MariaDB access is restricted and protected.
-
----
-
-## 🌍 Domain and Networking
-
-- Services are hosted on a virtual machine.
-- You configure a **custom domain** (e.g., `yourname.42.fr`).
-- Nginx handles domain routing and HTTPS.
-
----
-
-## ✅ Project Requirements (42 School)
-
-- Use Docker containers only (no host installs).
-- No `:latest` tags; pin all image versions.
-- Use Docker volumes for persistence.
-- Host all services on the same network.
-- Services must restart automatically.
-
----
-
-## 📸 Screenshot (Optional)
-
-> _You can add a screenshot here of the running WordPress site._
-
----
-
-## 🧠 Learnings
-
-Through this project, you’ll gain experience with:
-- Dockerfile creation
-- Docker Compose orchestration
-- SSL certificate generation
-- Setting up a production-like WordPress environment
-- Secure and persistent infrastructure design
-
----
-
-## 🏁 Getting Started
-
-1. Clone the repo:
+1. **Clone the repository**
    ```bash
-   git clone https://github.com/4bd3lb4554t/INCEPTION.git
+   git clone https://github.com/Xylar-99/INCEPTION.git
    cd INCEPTION
    ```
 
-2. Configure your `.env` file:
-   ```env
+2. **Set up environment variables**
+   ```bash
+   # Create .env file in srcs/ directory
+   cp srcs/.env.example srcs/.env
+   # Edit the .env file with your configurations
+   ```
 
-USER_WP=login
-PASS_WP=0000
-DB_WP=WP
-HOST_WP=mariadb:3306
+3. **Create data directories**
+   ```bash
+   sudo mkdir -p /home/$(whoami)/data/files
+   sudo mkdir -p /home/$(whoami)/data/database
+   ```
 
-MYSQL_ROOT=root
-MYSQL_DB=WP
-MYSQL_USER=login
-MYSQL_PASS=0000
+4. **Build and start services**
+   ```bash
+   make up
+   ```
 
+5. **Access your services**
+   - WordPress: `https://yourdomain.42.fr`
+   - Adminer: `https://yourdomain.42.fr/adminer`
+   - Static Site: `https://yourdomain.42.fr/website`
+   - cAdvisor: `https://yourdomain.42.fr/cadvisor`
+
+### Management Commands
+
+```bash
+# Start all services
+make up
+
+# Stop all services  
+make down
+
+# Clean up everything (including volumes)
+make fclean
+
+# Rebuild everything
+make re
+```
+
+## 📁 Project Structure
+
+```
+INCEPTION/
+├── 📄 Makefile                     # Project management commands
+├── 📄 README.md                    # This file
+└── 📁 srcs/
+    ├── 📄 docker-compose.yml       # Container orchestration
+    └── 📁 requirements/
+        ├── 📁 nginx/               # Web server configuration
+        │   ├── 🐳 Dockerfile
+        │   ├── 📁 conf/
+        │   └── 📁 tools/
+        ├── 📁 wordpress/           # CMS configuration
+        │   ├── 🐳 Dockerfile
+        │   ├── 📁 conf/
+        │   └── 📁 tools/
+        ├── 📁 mariadb/            # Database configuration
+        │   ├── 🐳 Dockerfile
+        │   └── 📁 tools/
+        └── 📁 bonus/              # Additional services
+            ├── 📁 adminer/
+            ├── 📁 cadvisor/
+            ├── 📁 ftp/
+            ├── 📁 redis/
+            └── 📁 website/
+```
+
+## 🔐 Security Features
+
+- **🔒 HTTPS Only**: All traffic encrypted with TLS 1.3
+- **🏗️ Custom Images**: Built from official Debian base images
+- **🔐 Network Isolation**: Services communicate through private networks
+- **📝 Environment Variables**: Sensitive data managed securely
+- **🚫 No Passwords in Images**: All credentials externalized
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+Create a `.env` file in the `srcs/` directory:
+
+```env
+# Database Configuration
+DB_WP=wordpress_db
+USER_WP=wp_user
+PASS_WP=secure_password
+HOST_WP=mariadb
+
+# WordPress Users
+USER_01=admin_user
+PASS_USER_01=admin_password
+USER_02=regular_user  
+PASS_USER_02=user_password
+
+# Redis Configuration
 HOST_REDIS=redis
 PORT_REDIS=6379
-   ```
 
-3. Build and run:
-   ```bash
-   make
-   ```
+# Domain
+DOMAIN=yourdomain.42.fr
+```
 
-4. Access your site at `https://login.42.fr`
+### Volume Configuration
+
+Update the volume paths in `docker-compose.yml` to match your system:
+
+```yaml
+volumes:
+  wp_files:
+    driver_opts:
+      device: /home/yourusername/data/files/
+  database:
+    driver_opts:
+      device: /home/yourusername/data/database/
+```
+
+## 📊 Monitoring
+
+### cAdvisor Dashboard
+Access real-time container metrics at `https://yourdomain.42.fr/cadvisor`
+
+**Features:**
+- CPU and Memory usage
+- Network I/O statistics
+- Container lifecycle events
+- Historical performance data
+
+### Health Checks
+```bash
+# Check container status
+docker ps
+
+# View service logs
+docker compose -f srcs/docker-compose.yml logs [service_name]
+
+# Monitor resource usage
+docker stats
+```
+
+## 🛠️ Development
+
+### Adding New Services
+
+1. Create service directory in `requirements/bonus/`
+2. Add Dockerfile and configuration files
+3. Update `docker-compose.yml`
+4. Configure networking and volumes
+5. Test service integration
+
+### Debugging
+
+```bash
+# Enter container shell
+docker exec -it [container_name] /bin/bash
+
+# View service logs
+docker compose logs -f [service_name]
+
+# Check network connectivity
+docker network inspect inception
+```
+
+## 📝 42 School Requirements
+
+### ✅ Mandatory Requirements
+
+- [x] NGINX with TLSv1.3 only
+- [x] WordPress + php-fpm
+- [x] MariaDB database
+- [x] Custom Dockerfiles (no pre-built images)
+- [x] Persistent volumes
+- [x] Docker network
+- [x] Container restart policies
+
+### ✅ Bonus Requirements
+
+- [x] Redis cache for WordPress
+- [x] FTP server pointing to WordPress files  
+- [x] Adminer for database management
+- [x] Static website (not WordPress/PHP)
+- [x] cAdvisor for monitoring
+
+### 📚 Learning Objectives
+
+This project demonstrates mastery of:
+
+- **🐳 Docker**: Container creation and management
+- **🔧 System Administration**: Service configuration and deployment
+- **🌐 Web Technologies**: NGINX, PHP, MySQL stack
+- **🔒 Security**: SSL/TLS, network isolation
+- **📊 Monitoring**: Performance tracking and analytics
+- **🏗️ Architecture**: Microservices design patterns
 
 ---
 
 ## 👨‍💻 Author
 
-- GitHub: [@4bd3lb4554t](https://github.com/4bd3lb4554t)
-- Project by 42 School
+**Abdelbassat Quaoub** - Student at 42 School (1337 Morocco)
+
+- GitHub: [@Xylar-99](https://github.com/Xylar-99)
+- 42 Intra: `abquaoub`
+
+## 📄 License
+
+This project is created for educational purposes as part of the 42 School curriculum.
 
 ---
 
-## 📜 License
+<div align="center">
 
-This project is licensed under the 42 School intra guidelines. Use responsibly and for educational purposes.
+**🎓 Made with ❤️ at 42 School (1337 Morocco)**
 
----
+*"The best way to learn is by doing"*
+
+</div>
